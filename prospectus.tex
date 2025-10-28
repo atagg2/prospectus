@@ -410,16 +410,15 @@ These derivatives are obtained via automatic differentiation (AD) by propagating
 
 To reduce this computational burden, $A_k$ and $B_k$ are not computed at every time step. Instead, they are evaluated at a limited number of key points along the trajectory, exploiting the observation that the Jacobians typically change gradually as the aircraft transitions from hover to cruise.  
 
-Once $A_k$ and $B_k$ have been calculated at these select points, the missing values at intermediate time steps are estimated by fitting a curve using least-squares regression. A depiction of this approach to derivative computation is shown in Fig. ~\ref{fig:derivative_regression}
+Once $A_k$ and $B_k$ have been calculated at these select points, the missing values at intermediate time steps are estimated by fitting a curve using least-squares regression.  This approach substantially reduces the number of derivative computations required, thereby lowering overall computational cost. 
 
-\begin{figure}[hbt!]
-\centering
-\includegraphics[width=0.7\textwidth]{figures/derivative_regression.png}
-\caption{}
-\label{fig:derivative_regression}
-\end{figure}
+%\begin{figure}[hbt!]
+%\centering
+%\includegraphics[width=0.7\textwidth]{figures/derivative_regression.png}
+%\caption{}
+%\label{fig:derivative_regression}
+%\end{figure}
 
-This approach substantially reduces the number of derivative computations required, thereby lowering overall computational cost. 
 
 Another challenge presented by the VPM is the fact that the linear model matrices $A_k$, $B_k$, and $C_k$ are generally very noisy.  This noise is inherant in an unsteady aerodynamic model because vortical structures in the flow are shed from rotors that are spinning at a very high RPM. The high blade passage frequency causes rapidly oscillating unsteady forces, which is completely consistent from a physics stand point, but nonetheless causes numerical issues for the optimization and makes it difficult to achieve convergence. 
 
@@ -438,7 +437,7 @@ These techniques have been successfully applied to the trajectory optimization o
 
 \begin{figure}[hbt!]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/trajectory.png}
+\includegraphics[width=0.8\textwidth]{figures/trajectory.png}
 \caption{}
 \label{fig:trajectory}
 \end{figure}
@@ -447,7 +446,7 @@ As part of this study, we compare the force predictions from the VPM with those 
 
 \begin{figure}[hbt!]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/comparison.png}
+\includegraphics[width=0.9\textwidth]{figures/comparison.png}
 \caption{}
 \label{fig:comparison}
 \end{figure}
@@ -529,7 +528,7 @@ which has eigenvalue $\lambda = -15$.  Because the dynamics are relatively fast,
 
 \begin{figure}[hbt!]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/neural_time_step.png}
+\includegraphics[width=0.8\textwidth]{figures/neural_time_step.png}
 \caption{}
 \label{fig:neural_time_step}
 \end{figure}
@@ -624,7 +623,7 @@ This method was used to learn a solution to the Koopman problem for a simulated 
 
 \begin{figure}[hbt!]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/method_of_characteristics.png}
+\includegraphics[width=0.9\textwidth]{figures/method_of_characteristics.png}
 \caption{}
 \label{fig:method_of_characteristics}
 \end{figure}
@@ -706,9 +705,22 @@ We can therefore construct the full Koopman operator of $f$ by
 
 This approach has the potential to be arbitrarily general because we relied on projection of our function onto a custom basis instead of training data.  However, it is currently only in the very early stages of development and remains untested.  It is also possibly susceptible to very large errors because each projection is an approximation, and the error accumulated over a large computational graph can be very significant unless it is trained sufficiently to minimize that error. For this reason, we will pursue both the projection approach and the method of characteristics approach to achieve the best outcome.
 
-\subsubsection{Autoencoder linear dynamics}
 
 \section{Anticipated Contributions}
+
+
+The proposed work, as outlined in the previous section, aims to bridge the gap between high fidelity simulation, and iterative optimization and control applications through several key contributions:
+
+\begin{enumerate}
+\item A practical demonstration of VPM-based trajectory optimization, including a comparative analysis that underscores the importance of unsteady modeling during eVTOL transition phases.
+\item The development of a neural time-step reduction methodology applicable to any general set of ODEs, which will substantially accelerate high-fidelity simulations while preserving accuracy.
+\item An enhancement of the generalizability of the Koopman learning process, enabling more robust linearization of nonlinear dynamics and supporting real-time control of complex, high-fidelity systems.
+\end{enumerate}
+
+Together, these efforts will create a cohesive framework that unites high-fidelity aerodynamic modeling, machine learning, and control theory. By overcoming the computational and modeling barriers that have traditionally separated simulation from real-time decision making, this research will make it possible for optimization and control algorithms to directly leverage unsteady aerodynamic effects. In doing so, it lays the foundation for a new generation of aircraft design and control strategies—ones that are not only faster and more efficient, but also fundamentally more adaptive and aware of the physics that govern their motion.
+
+
+
 
 % Why will it matter when you succeed
     % Optimization of aircraft that go through unsteady maneuvers will be more accurately informed
@@ -720,6 +732,8 @@ This approach has the potential to be arbitrarily general because we relied on p
 % Methodological contributions
 
 % Practical impact
+
+ 
 
 
 \pagebreak
