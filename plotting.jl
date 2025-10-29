@@ -65,7 +65,7 @@ t_vpm = range(0.0, 7.5, length(cf_wing_vpm[:,1,1]))
 # plot forces
 p_lift_wing = PL.plot(ts, vlm_lift_wing,
            xlabel = "Time (s)",
-           ylabel = "Lift (N)",
+           ylabel = "Vertical Force (N)",
            label = "VLM",
            legend = :topleft)
 PL.plot!(p_lift_wing, t_vpm, vpm_lift_wing,
@@ -73,7 +73,7 @@ PL.plot!(p_lift_wing, t_vpm, vpm_lift_wing,
 
 p_drag_wing = PL.plot(ts, vlm_drag_wing,
            xlabel = "Time (s)",
-           ylabel = "Drag (N)",
+           ylabel = "Horizontal Force (N)",
            label = "VLM",
            legend = :topleft)
 PL.plot!(p_drag_wing, t_vpm, vpm_drag_wing,
@@ -112,7 +112,7 @@ t = range(0.0, 1.0, length(z[1,:]))
 
 # create standard method plot
 palette = PL.palette(:auto)
-ps = PL.plot(t, y[1,:], xlabel = "Time", ylabel = "Latent State", label="Actual", color=palette[1], legend = :bottomleft)
+ps = PL.plot(t, y[1,:], xlabel = "Time", ylabel = "Latent State", label="Actual", color=palette[1], legend = :bottomleft, title = "Standard Neural Network")
 PL.plot!(t, yp[1,:], ls=:dash, color=palette[1], label = "Predicted")
 PL.plot!(t, y[2,:], color=palette[2], label = false)
 PL.plot!(t, yp[2,:], ls=:dash, color=palette[2], label = false)
@@ -126,7 +126,7 @@ PL.plot!(t, y[6,:], color=palette[6], label = false)
 PL.plot!(t, yp[6,:], ls=:dash, color=palette[6], label = false)
 
 # create method of characteristics plot
-pm = PL.plot(t, z[1,:], xlabel = "Time", zlabel = "Latent State", label=false, color=palette[1], legend = :bottomright)
+pm = PL.plot(t, z[1,:], xlabel = "Time", zlabel = "Latent State", label=false, color=palette[1], legend = :bottomright, title = "Method of Characteristics Network")
 PL.plot!(t, zp[1,:], ls=:dash, color=palette[1], label = false)
 PL.plot!(t, z[2,:], color=palette[2], label = false)
 PL.plot!(t, zp[2,:], ls=:dash, color=palette[2], label = false)

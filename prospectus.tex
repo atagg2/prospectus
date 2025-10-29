@@ -1,5 +1,7 @@
 \documentclass[12pt, letterpaper]{article}
 
+\usepackage{pgfgantt}
+
 \usepackage{amsfonts}
 \usepackage{amsmath} % needed for including equations
 \usepackage[margin=1in]{geometry} % sets the margins to 1in
@@ -19,9 +21,9 @@
 \vspace*{\fill}
 
 \vspace{0.5in}
-
+    
 % Insert your title here
-{ \LARGE \bfseries Title of Your Prospectus}\\[.25in]
+{ \LARGE \bfseries Integrating High-Fidelity Aerodynamics into Optimization and Control via Deep Learning and Koopman Theory }\\[.25in]
 
 \large
 by\\[.25 in]
@@ -122,7 +124,7 @@ High fidelity aerodynamic modeling is an essential tool in the analysis of moder
 In this work, we propose a framework to fully incorporate high fidelity aerodynamics into optimization and control loops through an unsteady vortex particle method (VPM).  We will accelerate VPM simulation with a novel deep learning technique designed to reduce the number of time steps required to solve the governing differential equations.  This will significantly reduce computational cost, thereby enhancing the practicality of the VPM in large scale iterative optimization.  For real time control, we will leverage Koopman operator theory to learn linear representations of VPM dynamics, and develop methods to improve the generalizability of the Koopman learning process.  By learning linear representations of the underlying flow dynamics, we will support rapid and accurate control synthesis using tried and true linear techniques.
 
 % Create a vision ("So what")
-By developing these key innovations, we will enable large scale integration of VPM aerodynamics into the design and control process.  High fidelity aerodynamics will inform decisions from early conceptual design all the way through to the flight control stage.  These decisions will not only consider how the aircraft behaves, but also how the surrounding air moves and evolves during complex maneuvers.  With these enhaced modeling capabilities available during moments of crucial decision making, we will open the door for aircraft that are not only more efficient and capable, but fundamentally more intelligent in how they interact with their environment. 
+Through the development of these key innovations, we will enable large scale integration of VPM aerodynamics into the design and control process.  High fidelity aerodynamics will inform decisions from early conceptual design all the way through to the flight control stage.  These decisions will not only consider how the aircraft behaves, but also how the surrounding air moves and evolves during complex maneuvers.  With these enhaced modeling capabilities available during moments of crucial decision making, we will open the door for aircraft that are not only more efficient and capable, but fundamentally more intelligent in how they interact with their environment. 
 
 \section{Background}
 
@@ -131,19 +133,19 @@ The next generation of aircraft systems is being conceved to operate in increasi
 
 All of these aircraft pose significant operational challenges, because they must undergo complex dynamic maneuvers in which unsteady aerodynamics play a leading role.  For example, the eVTOL transition from hover to cruise is largely characterized by wake mixing, and unsteady interactions between propellers and lifting surfaces that are difficult to predict.  In the presence of strong unsteady loading, the aircraft must execute a series of complex control inputs that balance forward motion with vertical propulsion while simultaneously managing rotation. In addition, successful transitions often require adherence to constraints on power \cite{moradi2024urban}, acceleration \cite{xiang2024autonomous}, acoustic output \cite{raza2025noise}, and obstacle avoidance \cite{shukla2025trajectory}. Considering all of these factors at once quickly becomes an overwhelming task for a pilot.
 
-The key to navigating this complex space of decisions is trajectory optimization, which is the process of optimizing the path, and control inputs of the maneuver to minimize some desired objective subject to required constraints.  Recent work in eVTOL trajectory optimization has exposed key insights that highlight the importance of consdering complex aerodynamic phenomena when optimizing these transition maneuvers.  \cite{chauhan2020tilt} optimized the takeoff trajectory of a tilt-wing aircraft, and found that optimal trajectories involve operating at or near the stall region.  This was complemented by other work which investigated the possibility of using active flow control to delay stall during a tilt-wing transition \cite{panish2025tiltwing}. Another study directly implemented a constraint to avoid the vortex ring state during takeoff and landing and showed how this constraint afffected the optimal path \cite{park2023trajectory}.
+The key to navigating this complex space of decisions is trajectory optimization, which is the process of optimizing the path, and control inputs of the maneuver to minimize some desired objective subject to required constraints.  Recent work in eVTOL trajectory optimization has exposed key insights that highlight the importance of consdering complex aerodynamics when optimizing these transition maneuvers.  \cite{chauhan2020tilt} optimized the takeoff trajectory of a tilt-wing aircraft, and found that optimal trajectories involve operating at or near the stall region.  This was complemented by other work which investigated the possibility of using active flow control to delay stall during a tilt-wing transition \cite{panish2025tiltwing}. Another study directly implemented a constraint to avoid the vortex ring state during takeoff and landing and showed how this affected the optimal path \cite{park2023trajectory}.
 
-Considering these unsteady aerodynamic phenomena during trajectory optimization is crucial for safe and optimal performance, and therefore affects overall aircraft design decisions.  Recent work has shown that trajectory optimization plays a key role in battery sizing \cite{liu2024flight}, and can inform airfoil design \cite{panish2025tiltwing}.  This is why several design studies have directly incorperated the trajectory into the optimization process \cite{sarojini2023large, kaneko2024simultaneous, kaneko2025simultaneous}. 
+Considering these unsteady aerodynamic phenomena during trajectory optimization is crucial for safe and optimal performance, and therefore affects overall aircraft design decisions.  Recent work has shown that trajectory optimization plays a key role in battery sizing \cite{liu2024flight}, and can inform airfoil design \cite{panish2025tiltwing}.  This is why several studies have directly incorperated the trajectory into the overall aircraft design process \cite{sarojini2023large, kaneko2024simultaneous, kaneko2025simultaneous}. 
 
 One of the most important results of trajectory optimization is it's natural application to automation and control.  Classical control methods often rely on linear models that are only valid locally, and cannot be simultaneously applied to the entire flight envelope of a modern transitioning vehicle.  Instead, many efforts have employed trajectory optimization as a planning process to develop controllers that evolve over time through gain scheduling \cite{thompson2020robust}, or onboard control policy updates \cite{gupta2025realtimeplanningcontrolvortex}.
 
 Notably, there are approaches that allow for the use of a single control policy for the entire transition.  These either employ advanced robust control strategies such as $H^{\infty}$ methods \cite{yang2021robust}, or rely on Koopman operator theory to learn globally linear dynamic representations \cite{korda2018koopman, abraham2017modelbased, zinage2021koopman}.  Koopman operator theory presents an especially promising option because it provides a way to learn dynamics that are linear everywhere in the state space, thus opening the door for linear controllers that are accurate and can be applied in any flight regime without sacrificing performance.  The main limitation preventing the widespread use of current Koopman methods is that they require exhaustive data to be completely general, which is difficult to obtain for high dimensional or high fidelity problems. 
 
-The large foundation of work in trajectory optimization and control of aircraft which undergo complex transition maneuvers represents a robust and versitile framework for performing optimization and control across multiple flight regimes.  This existing work has exposed critical design tradeoffs for these types of aircraft, and higlighted the importance of considering time varying dynamics during the transition phase.  
+The large foundation of work in trajectory optimization and control during complex transition maneuvers represents a robust and versitile framework for operating across multiple flight regimes.  This existing work has exposed critical design tradeoffs for these types of aircraft, and highlighted the importance of considering time varying dynamics during the transition phase.  
 
-However, the main limitation of the current base of research is that nearly all of these studies rely heavily on overly simplified aerodynamic models, which either assume steady state flow, or other idealizations that are not accurate during an unsteady maneuver.  This is a real problem because there is strong evidence to suggest that model fidelity has a severe effect on the outcome of trajectory optimization \cite{anderson2021acomparison}.  Some studies have directly compared steady state models with unsteady models during an eVTOL transition and found significant discrepancy \cite{tagg2024trajectory}.  Others have quantified the effect of unsteady aerodynamics during rotational motion, and found that it greatly impacts the dynamic stability of the aircraft \cite{wang2012unsteady}.  Clearly, unsteady aerodynamics play an important role during the transition of these aircraft, and cannot be justifiably ignored during analysis and optimization. 
+However, the main limitation of the current base of research is that nearly all of these studies rely heavily on overly simplified aerodynamic models, which either assume steady state flow, or other idealizations that are not accurate during an unsteady maneuver.  This is a real problem.  There is strong evidence to suggest that model fidelity has a severe effect on the outcome of trajectory optimization \cite{anderson2021acomparison}.  Some studies have directly compared steady state models with unsteady models during an eVTOL transition and found significant discrepancy \cite{tagg2024trajectory}.  Others have quantified the effect of unsteady aerodynamics during rotational motion, and found that it greatly impacts the dynamic stability of the aircraft \cite{wang2012unsteady}.  Clearly, unsteady aerodynamics play an important role during the transition of these aircraft, and cannot be justifiably ignored during analysis and optimization. 
 
-Some effort has been made toward improving model fidelity in optimization and control applications.  One common approach is to generate high fidelity CFD data, and then tune the parameters of the low fidelity model \cite{dean2008aircraft, tian2020cfd, gortz2007towards}.  This is definitely an improvement because the new parameters are informed by high fidelity simulations, but unless the parameters are updated constantly, it is still subject to the limitations of a steady state model.  Other studies have focused on applying fast unsteady aerodynamic models like the harmonic balance method \cite{thomas2004modeling} and Theodorsen's theory \cite{bhoir2004output}.  While useful, these methods apply only to very simple oscillatory motions and cannot represent a more complex maneuver.  
+Some effort has been made toward improving model fidelity in optimization and control applications.  One common approach is to generate high fidelity CFD data, and then tune the parameters of the low fidelity model \cite{dean2008aircraft, tian2020cfd, gortz2007towards}.  This approach is a clear improvement, but unless the parameters are updated constantly, it is still subject to the limitations of a steady state model.  Other studies have focused on applying fast unsteady aerodynamic models like the harmonic balance method \cite{thomas2004modeling} and Theodorsen's theory \cite{bhoir2004output}.  While useful, these methods apply only to very simple oscillatory motions and cannot represent a more complex maneuver.  
 
 The best effort so far to fully incorperate high fidelity simulations into optimization and control loops has come from a pair of studies that employed a light weight two-dimensional vortex particle method to trajectory optimization \cite{perrotta2023planningcontroldynamicmorphingwing} and then real time control \cite{gupta2025realtimeplanningcontrolvortex} for fixed wing perching maneuvers.  Even though these VPM models were limited to two dimensions, and under 100 particles, the studies showed improved performance and more accurate precision landings when the unsteady model was used.  This is direct evidence that employing high fidelity models in control loops can lead to better results, but the scope of these improvements is still very much limited by computational cost as demonstrated by the need for such a light weight version of the VPM.   
 
@@ -151,7 +153,7 @@ One promising alternative is the use of deep learning to capture unsteady fluid 
 
 Deep learning offers the potential for rapid evaluation and can capture unsteady aerodynamic effects, but traditional data-driven approaches often fail to generalize without prohibitively large datasets. Low-fidelity models are computationally efficient and generalize well, yet they neglect critical unsteady phenomena. High-fidelity simulations, on the other hand, are accurate and broadly applicable but are too computationally expensive for practical use in iterative optimization and real-time control. What is needed is a methodology that combines speed, accuracy, and generality, enabling unsteady aerodynamics to directly inform design and control decisions.
 
-The proposed work addresses this challenge through a novel integration of high-fidelity simulation and deep learning. Rather than using data to fully replace the vortex particle method (VPM), we focus on accelerating the simulation of known VPM dynamics by reducing the number of required time steps. This approach will make VPM-based trajectory optimization significantly more feasible by reducing a primary bottleneck in VPM simulation. Building on this foundation, we will develop a method for learning Koopman linear representations that leverages known PDE solution methods and deep learning, enhancing generalizability across flow conditions. The resulting framework will enable real-time control informed by high-fidelity, unsteady aerodynamics, bridging the gap between computationally expensive simulations and practical optimization and control applications.
+The proposed work addresses this challenge through a novel integration of high-fidelity simulation and deep learning. Rather than using data to fully replace the vortex particle method (VPM), we focus on accelerating the simulation of known VPM dynamics by reducing the number of required time steps. This approach will make VPM-based trajectory optimization significantly more feasible by reducing a primary bottleneck in VPM simulation. Building on this foundation, we will develop a method for learning Koopman linear representations of VPM dynamics without relying on an exhaustive training data set. This will improve the generalizability of Koopman learning, and enable Koopman linearization of high-dimensional, and computationally expensive models.  The resulting framework will enable real-time control informed by high-fidelity aerodynamics, bridging the gap between computationally expensive simulations and practical control applictions.
 
 
 % introduce some cases where unsteady aero is imortant
@@ -298,16 +300,19 @@ The central goal of this work is to facilitate the incorporation of high-fidelit
 \begin{enumerate}
     \item \textbf{Demonstrate VPM-based trajectory optimization for an eVTOL transition maneuver.} 
     We will apply the VPM to simulate unsteady aerodynamic effects during an eVTOL hover-to-cruise maneuver and use this model to optimize the transition trajectory. This objective will address practical challenges associated with VPM-based optimization, such as noise and convergence, and provide a baseline in terms of computation time for comparison against future VPM acceleration efforts.  Included in this study will be a comparison of high fidelity and low fidelity models and an analysis of their impact on the trajectory optimization.
+
     \item \textbf{Develop a methodology to accelerate VPM simulations by reducing the number of required time steps.} 
-    By addressing a major computational bottleneck in VPM, this objective aims to make high-fidelity simulations fast enough to be used in iterative optimization. We will validate the method by quantifying the speedup and the accuracy of the accelerated VPM simulations. 
+    By addressing a major computational bottleneck in the VPM, this objective aims to make high-fidelity simulations fast enough to be used in iterative optimization. We will validate the method by quantifying the speedup and the accuracy of the accelerated VPM simulations compared to baseline simulations. 
 
     \item \textbf{Develop a methodology to learn Koopman linear representations of VPM dynamics and improve generalizability.} 
-    This objective will seek to uncover linear representations of VPM dynamics, enabling real time control synthesis informed by VPM aerodynamics.  We will apply a combination of physics informed deep learning, and PDE solution methods to demonstrate improved generality over state of the art approaches.  
-
+    This objective will seek to uncover linear representations of VPM dynamics, enabling real time control synthesis informed by the VPM.  We will apply a combination of physics informed deep learning, and PDE solution methods to demonstrate improved generality over state of the art approaches.  
 
     \item \textbf{Apply these new techniques to the eVTOL transition maneuver problem.}
     This objective will be an application of the novel techniques developed and will serve to demonstrate their effectiveness in the context of an eVTOL transition maneuver.  We will conduct trajectory optimization using the accelerated VPM simulations, and control synthesis using the learned Koopman operator.
 \end{enumerate}
+
+Together, these objectives establish a cohesive research plan which will unite high-fidelity aerodynamic modeling with optimization and control.  By first demonstrating the practical feasibility and importance of unsteady aerodynamics in trajectory optimization, and then systematically addressing computational challenges that limit it's broader use, this research will lay the ground work for rapid optimization and real-time control using models that are based on sound physical foundations. 
+
 
 % What will you do
     % Demonstrate the need for high fidelity modeling during optimization, and the feasibility of applying it
@@ -324,10 +329,10 @@ The central goal of this work is to facilitate the incorporation of high-fidelit
 
 
 % Summarize the high level approach
-As outlined in the previous section, the proposed work will have four main thrusts.  First, the VPM will be applied to an eVTOL transition optimization problem to demonstrate feasibility of the optimization approach and highlight the need for high fidelity modeling in this case.  Next, the method of applying deep learning to accelerate VPM simulation through time step reduction will be developed and tested.  After successful VPM accelerations are achieved, the focus of the project will turn toward improving the generality of the Koopman learning problem, specifically for VPM dynamics.  Finally, these innovations will be utilized to optimize trjectories and perform active feedback control for the eVTOL transition maneuver to demonstrate improved performance and reduced computational cost.  
+As outlined in the previous section, the proposed work will have four main thrusts.  First, the VPM will be applied to an eVTOL transition optimization problem to demonstrate feasibility of the optimization approach and highlight the need for high fidelity modeling in this case.  Next, the method of applying deep learning to accelerate VPM simulation through time step reduction will be developed and tested.  After successful VPM accelerations are achieved, the focus of the project will turn toward Koopman learning for VPM dynamics.  Finally, these innovations will be utilized to optimize trjectories and perform active feedback control for the eVTOL transition maneuver to demonstrate improved performance and reduced computational cost.  
 
 % Method subsections
-\subsection{Trajectory optimization}
+\subsection{Trajectory Optimization}
 
 For trajectory optimization, we represent the aircraft as a set of dynamic states $\mathbf{x}$, and control inputs $\mathbf{u}$ and we express the discrete time evolution of the aircraft states as
 
@@ -357,7 +362,7 @@ This problem is highly nonlinear due to the system dynamics $F$, which include u
     \mathbf{x}_{k+1} = F(\mathbf{x}_k,\mathbf{u}_k) \approx F(\mathbf{x}^*,\mathbf{u}^*) + A (\mathbf{x}_k - \mathbf{x}^*) + B (\mathbf{u}_k - \mathbf{u}^*)
 \end{equation}
 
-where $A$ and $B$ are the Jacobians of the $F$ with respect to the states and inputs, evaluated about a nominal point $(\mathbf{x}^*, \mathbf{u}^*)$.  For convenience, we rearrange and write
+where $A$ and $B$ are the Jacobians of $F$ with respect to the states and inputs, evaluated about a nominal point $(\mathbf{x}^*, \mathbf{u}^*)$.  For convenience, we rearrange and write
 
 
 \begin{equation}
@@ -367,7 +372,7 @@ where $A$ and $B$ are the Jacobians of the $F$ with respect to the states and in
 
 where $C = F(\mathbf{x}^*, \mathbf{u}^*) - A \mathbf{x}^* - B \mathbf{u}^*$
 
-This now represents a linear approximation of the nonlinear dynamics, but it is only valid close to $\mathbf{x}^*$ and $\mathbf{u}^*$.  For an eVTOL transition, this is problematic because final desired state is cruise, which is very different from hover.  To remedy this, we update the linear model at every time step, and allow $A$, $B$ and $C$ to vary with time.  The equation now becomes
+This now represents a linear approximation of the nonlinear dynamics, but it is only valid close to $\mathbf{x}^*$ and $\mathbf{u}^*$.  For an eVTOL transition, this is problematic because the final desired state is cruise, which is very different from hover.  To remedy this, we update the linear model at every time step, and allow $A$, $B$ and $C$ to vary with time.  The equation now becomes
 
 
 \begin{equation}
@@ -433,12 +438,12 @@ To address this, we apply an exponential moving average of the matrices to smoot
 
 where $\bar{A}_k$ is the tracked average of the derivatives across iterations, $A_k$ is the newly computed derivative, and $\alpha$ is a tuning parameter which regulates the level of filtering.
 
-These techniques have been successfully applied to the trajectory optimization of a tilt-rotor eVTOL inspired by the Joby S4 aircraft.  The results of the trajectory optimization are presented in Fig. ~\ref{fig:trajectory} which shows that the aircraft was able to reach a target velocity of $55$ meters per second while maintaining constant altitude by gradually tilting its rotors forward.
+These techniques have been successfully applied to the trajectory optimization of a tilt-rotor eVTOL inspired by the Joby S4 aircraft.  The results of the trajectory optimization are presented in Fig. ~\ref{fig:trajectory} which shows that the aircraft was able to reach a target velocity of $55$ meters per second by gradually tilting its rotors forward while maintaining constant altitude by pitching the aircraft up to increase lift.
 
 \begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/trajectory.png}
-\caption{}
+    \caption{Optimal trajectory and control inputs for a tilt-rotor eVTOL aircraft during a hover to cruise transition modeled in the VPM.  Aircraft velocity and pitch steadily increase with time, and rotors gradually tilt forward (0 deg is forward, 90 deg is vertical).}
 \label{fig:trajectory}
 \end{figure}
 
@@ -447,14 +452,14 @@ As part of this study, we compare the force predictions from the VPM with those 
 \begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/comparison.png}
-\caption{}
+    \caption{Vertical and horizontal forces on the wing during the transition maneuver as computed by the VPM (orange) and VLM (blue).  VLM predicts correct trends, but the two models disagree significantly during early transition (2 second mark)}
 \label{fig:comparison}
 \end{figure}
 
 
-\subsection{Neural time step reduction}
+\subsection{Neural Time Step Reduction}
 
-The techniques outlined above present a feasible approach to trajectory optimization in the VPM by overcoming key challenges such as noise and the high cost of derivatives.  However, the above optimization took roughly 428 hours to complete, which is a major limitation on the practicality of this approach. To address this issue, we will present a novel methodology that aims to accelerate the VPM by reducing the time steps necessary to solve the governing differential equations.  While a major motivation of this method is directed toward accelerating the VPM, it is completely general and can be applied to any ordinary differential equation (ODE).
+The techniques outlined above present a feasible approach to trajectory optimization in the VPM by overcoming key challenges such as noise and the high cost of derivatives.  However, the optimization took roughly 428 hours to complete, which is a major limitation on the practicality of this approach. A large part of this cost is due to the extremely small time steps necessary to resolve particle dynamics.  This means that simulations often have on the order of $10000$ time steps.  To address this issue, we will present a novel methodology that aims to accelerate the VPM by reducing the time steps necessary to solve the governing differential equations.  While a major motivation of this method is directed toward accelerating the VPM, it is completely general and can be applied to any explicit ordinary differential equation (ODE).  
 
 Consider a general system of ODEs
 
@@ -489,10 +494,11 @@ Then, by the chain rule,
 Both $\frac{d \phi}{d \mathbf{x}}$ and $\frac{d \mathbf{x}}{dt}$ are functions of $\mathbf{x}$, but we can substitute $\mathbf{x} = \psi(\mathbf{z})$ to obtain
 
 \begin{equation}
+    \label{eq:latent_dynamics}
     \frac{d\mathbf{z}}{dt} = \frac{d \phi}{d \mathbf{x}} \left( \psi(\mathbf{z}) \right) \frac{d \mathbf{x}}{dt}\left( \psi(\mathbf{z}) \right) 
 \end{equation}
 
-We have now expressed the dynamic system entirely in $\mathbf{z}$ space, and it is completely general because it was derived from the known dynamics of the system and the chain rule. 
+We have now expressed the dynamic system entirely in $\mathbf{z}$ space.  Because it was derived from the known dynamics of the system and the chain rule, Eq. \ref{eq:latent_dynamics} will generalize to the entire state space, assuming the autoencoder can learn a valid mapping from $\mathbf{x}$ to $\mathbf{z}$. 
 
 The next step is to train $\phi$ and $\psi$ to enforce slow dynamics in the latent representation. We define a loss function to be the spectral radius of the new dynamic system's Jacobian. 
 
@@ -524,16 +530,16 @@ This method has been shown to be successful in reducing the number of time steps
     \frac{dx}{dt} = -15x
 \end{equation}
 
-which has eigenvalue $\lambda = -15$.  Because the dynamics are relatively fast, a time step of $0.01$ was necessary to accurately simulate the trajectory using euler integration.  An autoencoder was trained using the above loss function, and then simulated accurately with a time step of $0.1$ - an order of magnitude larger than what was required for the original system.  As shown in Fig. ~\ref{fig:neural_time_steps} we simulated this new system and then reconstructed the original states using the decoder network.  The new system was shown to perform much better than the original system when using a large time step of $0.1$
+which has eigenvalue $\lambda = -15$.  Because the dynamics are relatively fast, a time step of $0.01$ was necessary to accurately simulate the trajectory using euler integration.  An autoencoder was trained using the above loss function, and then simulated accurately with a time step of $0.1$ - an order of magnitude larger than what was required for the original system.  As shown in Fig. ~\ref{fig:neural_time_step} we simulated this new system and then reconstructed the original states using the decoder network.  The new system was shown to simulate much more accurately than the original system when using a large time step of $0.1$
 
 \begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/neural_time_step.png}
-\caption{}
+    \caption{Simulation of the dynamic system $\frac{dx}{dt} = -15x$} using a small number of large time steps.  The original system (blue) is compared to the learned system (orange) and the analytic solution (green).  Using neural time step reduction drastically increases the accuracy of the simulations when using a large time step of 0.1.
 \label{fig:neural_time_step}
 \end{figure}
 
-\subsection{Koopman learning}
+\subsection{Koopman Learning}
 
 The neural time step reduction method described above has the potential to significantly speeed up VPM simulations, and enable their use in iterative optimization loops.  However, on its own, neural time step reduction is unlikely to achieve the speedups necessary for real time control, which requires many full simulations every second.  In order to facilitate real time VPM-based control, we seek linear models that can be used to solve the optimal control problem analytically. 
 
@@ -554,23 +560,21 @@ where $K$ is the Koopman operator and represents the globally linear dynamics of
 
 To overcome this challenge, most current approaches apply machine learning to learn a finite dimensional approximation to the Koopman operator.  For the mapping $\mathbf{z} = \phi(\mathbf{x})$ one can use existing basis functions like Hermite polynomials, but it's generally better to train a neural network to learn the best mapping possible.
 
-Because current methods typically rely on trajectory data simulated or experimentally obtained beforehand, there is always a risk of overfitting to the specific trajectories in the data set.  Because of this we are pursuing multiple options to potentially improve the generality of the Koopman learning process.
-
-\subsubsection{Method of characteristics}
+Because current methods typically rely on trajectory data simulated or experimentally obtained beforehand, there is always a risk of overfitting to the specific trajectories in the data set.  Therefore, we pursue a methodolgy that will improve the generalizability of the Koopman learning process, and mitigate the risk of overfitting when data is limited.
 
 One way to approach learning the linear Koopman dynamic system is by considering the set of partial differential equations that arise from applying the chain rule to the learned latent space.
 
 \begin{equation}
-    \frac{d \mathbf{z}}{dt} = \frac{d \mathbf{z}}{d \mathbf{x}} \frac{d \mathbf{x}}{dt} = \frac{d \mathbf{z}}{d \mathbf{x}} f(\mathbf{x})
+    \frac{d \mathbf{z}}{dt} = \frac{\partial \mathbf{z}}{\partial \mathbf{x}} \frac{d \mathbf{x}}{dt} = \frac{\partial \mathbf{z}}{\partial \mathbf{x}} f(\mathbf{x})
 \end{equation}
 
-Setting this equal to \ref{eq:Koopman} gives
+Setting this equal to Eq. \ref{eq:Koopman} gives
 
 \begin{equation}
-    \frac{d \mathbf{z}}{d \mathbf{x}} f(\mathbf{x}) = K \mathbf{z}
+    \frac{\partial \mathbf{z}}{\partial \mathbf{x}} f(\mathbf{x}) = K \mathbf{z}
 \end{equation}
 
-which is a linear partial differential equation that an be routinely solved using the method of characteristics.  The method of characteristics solves for $z$ along characteristic curves by reducing the problem to a set of ordinary differential equations parameterized by a variable $t$
+which is a linear partial differential equation that an be routinely solved using the method of characteristics.  The method of characteristics solves for $\mathbf{z}$ along characteristic curves by reducing the problem to a set of ordinary differential equations parameterized by a variable $t$
 
 \begin{equation}
     \frac{d\mathbf{x}}{dt} = f(\mathbf{x}), \; \;
@@ -597,114 +601,156 @@ With these two functions defined, we have
 
 where $\mathbf{z}_0$ is a function that accepts the trajectory label and returns the initial conditions in $\mathbf{z}$ space.  This can be any function, but it should be injective to ensure unique initial conditions for each label value.
 
-For training, we aim to find $t(\mathbf{x}$ and $l(\mathbf{x})$ satisfying
+We now have a model that is parameterized by the networks $t(\mathbf{x})$, $l(\mathbf{x})$, the function $\mathbf{z}_0$, and the matrix $K$.  This model is more interpretable, and generalizable then the traditional mapping defined by a single network $\mathbf{z}(\mathbf{x})$, because it encodes the known PDE solution method of characteristics.  
+
+For training, we aim to find $t(\mathbf{x})$ and $l(\mathbf{x})$ satisfying
 
 \begin{equation}
-    \begin{matrix}
-        \nabla t^T f(\mathbf{x}) = 1 \\
-        \nabla l^T f(\mathbf{x}) = 0
-    \end{matrix}
+        \frac{dt}{dt} = \frac{\partial t}{\partial \mathbf{x}} \frac{d \mathbf{x}}{dt} = 1 \\ \\
+\end{equation}
+
+\begin{equation}
+        \frac{dl}{dt} = \frac{\partial l}{\partial \mathbf{x}} \frac{d \mathbf{x}}{dt} = 0 \\ \\
 \end{equation}
 
 In other words, $t$ increases unitarily along the trajectories, and $l$ is constant along the trajectories.  
 
-If initial conditions are known we can also apply boundary conditions.  If $\mathbf{x}_0$ defines all the initial conditions, then we can enforce
+%If initial conditions are known we can also apply boundary conditions.  If $\mathbf{x}_0$ defines all the initial conditions, then we can enforce
+%
+%\begin{equation}
+%    \begin{matrix}
+%        t(\mathbf{x}_0) = 0 \\
+%        l(\mathbf{x}_0) = \omega(\mathbf{x}_0)
+%    \end{matrix}
+%\end{equation}
+%
+%where $\omega(\mathbf{x}_0)$ is a known function defining the trajectory labels.  For example, if $\mathbf{x} = (x, y)^T$ and we define initial conditions along the line $x = 0$, then the boundary conditions are $t(0,y) = 0$ and $l(0,y) = y$.  This means that trajectories start on the $y$-axis, and are labeled by their $y$ value.
 
-\begin{equation}
-    \begin{matrix}
-        t(\mathbf{x}_0) = 0 \\
-        l(\mathbf{x}_0) = \omega(\mathbf{x}_0)
-    \end{matrix}
-\end{equation}
-
-where $\omega(\mathbf{x}_0)$ is a known function defining the trajectory labels.  For example, if $\mathbf{x} = (x, y)^T$ and we define initial conditions along the line $x = 0$, then the boundary conditions are $t(0,y) = 0$ and $l(0,y) = y$.  This means that trajectories start on the $y$-axis, and are labeled by their $y$ value.
-
-This method was used to learn a solution to the Koopman problem for a simulated glider undergoing a transient maneuver before stabilizing.  The results where compared to the standard method of simply defining a vanilla neural network for $\mathbf{z}(\mathbf{x})$.  In both methods, the latent states were simulated from initial conditions using the learned Koopman operator $K$, and compared to their "true" values which where encoded directly from the original trajectory.  As shown in Fig. ~\ref{fig:method_of_characteristics}, the method of characteristics approach outperforms the standard method for the same number of collocation points.  
+This method was used to learn a solution to the Koopman problem for a simulated glider undergoing a transient maneuver before stabilizing.  The results where compared to the standard method of simply defining a vanilla neural network for $\mathbf{z}(\mathbf{x})$.  In both methods, the latent states were simulated from initial conditions using the learned Koopman operator $K$, and compared to their "true" values which where encoded directly from the original trajectory.  As shown in Fig. ~\ref{fig:method_of_characteristics}, the method of characteristics approach is much more accurate then the standard method for the same number of collocation points.  
 
 \begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/method_of_characteristics.png}
-\caption{}
+    \caption{Simulation of Koopman linearized dynamics of a glider which were learned by a standard neural network (left), and by the method of characteristics approach (right).  The simulated values (dashed) are compared to the true values (solid) for both cases.  For the same number of sample points, the method of characteristics approach is much more accurate then the standard approach, suggesting improved generality.}
 \label{fig:method_of_characteristics}
 \end{figure}
 
-\subsubsection{Projection onto a neural basis}
 
-Leveraging the method of characteristics is potentially more genearlizable than the current state of the art in Koopman learning, but it still relies on obtaining trajectory data, and may be subject to overfitting.  Therefore we pursue a secondary approach directed toward constructing the Koopman operator without relying on data at all.
+%\subsubsection{Projection onto a neural basis}
+%
+%In addition to the method of characteristics approach, we will pursue a secondary option that is potentially even more general because it doesn't rely on generating training trajectories.  Instead, we construct the Koopman operator by projecting the system dynamics onto a set of basis functions.
+%
+%Given a set of basis functions $\phi_n(\mathbf{x})$ with $n = 0,1,2 \cdots$ we can can represent a function $f(\mathbf{x})$ by an expansion in the basis
+%
+%\begin{equation}
+%    f(\mathbf{x}) = \overset{\infty}{\underset{n=0}{\sum}} a_n \phi_n(\mathbf{x})
+%\end{equation}
+%
+%where $a_n$ is the projection of the function onto the $n$th basis over the domain of interest
+%
+%\begin{equation}
+%    a_n = \int_D f(\mathbf{x}) \phi_n(\mathbf{x})  d \mathbf{x}
+%\end{equation}
+%
+%The Koopman operator can be thought of a matrix of these projection values.  If we have the discrete dynamic system $\mathbf{x}_{k+1} = F(\mathbf{x}_k)$, we want to find a matrix $K$ such that 
+%
+%\begin{equation}
+%    \phi(\mathbf{x}_{k+1}) = \phi(F(\mathbf{x}_k)) = K \phi(\mathbf{x}_k)
+%\end{equation}
+%
+%So we need to construct the function $\phi(F(\mathbf{x}_k))$ by an expansion in the basis $\phi(\mathbf{x}_k)$.  The Koopman operator $K$ is therefore a projection of the desired function onto this basis
+%
+%\begin{equation}
+%    \label{eq:koopman_projection}
+%    K_{ij} = \int_D \phi_i(F(\mathbf{x})) \phi_j(\mathbf{x})  d \mathbf{x}
+%\end{equation}
+%
+%This construction is desireable because it does not rely on data at all, and instead gives an analytic form of the best possible Koopman operator for a given set of bases.  
+%
+%There are two main challenges of this approach.  The first is that the basis functions $\phi_n$ may not be the ideal basis for expressing the underlying dynamics, which could lead to large errors unless $\phi_n$ is infinite.  
+%
+%To address this issue, we will define $\phi_n$ as a neural network and train it to learn the best possible basis to work in for the specific problem.  As a measure for how good the basis is, we examine the values of the projection coefficients, which reveal how much of the original function was captured by the projection.  This is mathematically expressed through Parseval's theorem which states that for the expansion of a function $f(x)$ a complete basis,
+%
+%\begin{equation}
+%    ||f||^2 = \overset{\infty}{\underset{n = 0}{\sum}} |a_n|^2
+%\end{equation}
+%
+%If this relation is true, then all of the "energy" of the function $f(x)$ is captured in the coefficients, and the function is exactly reconstructed.  Applied to the Koopman problem, this means we can define a loss function
+%
+%\begin{equation}
+%    L_i = ||\phi_i(F(\mathbf{x}))||^2 - \overset{N}{\underset{j = 0}{\sum}} |K_{ij}|^2
+%\end{equation}
+%
+%Minimizing this error over all the rows of the Koopman operator will yield the best possible basis.
+%
+%The second big challenge is that the integrand $\phi_j(\mathbf{x}) \phi_i(F(\mathbf{x}))$ from \ref{eq:koopman_projection} is potentially a very nonlinear and complex function that cannot be integrated analytically.  We can integrate numerically over the domain, but if the $\mathbf{x}$ is high dimensional, this quickly becomes extremely expensive.
+%
+%We address this issue by recognizing that any complex function $f(x)$ can be described by a computational graph which consists of the composition of many simple operations $f(x) = f_n \circ \cdots \circ f_3 \circ f_2 \circ f_1 \circ x$.  
+%
+%Finding the projections for just $f_1$ is potentially easier if $f_1$ is a simple operation
+%
+%\begin{equation}
+%    \phi(f_1(x)) = K_1 \phi(x)
+%\end{equation}
+%
+%Then, if we find the projections for $f_2$, 
+%
+%\begin{equation}
+%    \phi(f_2(x)) = K_2 \phi(x)
+%\end{equation}
+%
+%we can construct the projections for $f_2 \circ f_1$ because we have
+%
+%\begin{equation}
+%    \phi(f_2(f_1(x))) = K_2 \phi(f_1(x)) = K_2 K_1 \phi(x)\\ 
+%\end{equation}
+%
+%We can therefore construct the full Koopman operator of $f$ by
+%
+%\begin{equation}
+%    \phi(f(x)) = K_n \cdots K_2 K_1 \phi(x) = K \phi(x)\\ 
+%\end{equation}
+%
+%This approach has the potential to be arbitrarily general because we relied on projection of our function onto a custom basis instead of training data.  However, it is currently only in the very early stages of development and remains untested.  It is also possibly susceptible to very large errors because each projection is an approximation, and the error accumulated over a large computational graph can be very significant unless it is trained sufficiently to minimize that error. For this reason, we will pursue both the projection approach and the method of characteristics approach to achieve the best outcome.
+%
 
-Given a set of basis functions $\phi_n(\mathbf{x})$ we can can represent a function $f(\mathbf{x})$ by an expansion in the basis
+\subsection{Project Outline}
 
-\begin{equation}
-    f(\mathbf{x}) = \overset{\infty}{\underset{n=0}{\sum}} a_n \phi_n(\mathbf{x})
-\end{equation}
+In order to successfully accomplish all of the specified research objectives, we will adhere to the following project timeline:
 
-where $a_n$ is the projection of the function onto the $n$th basis over the domain of interest
+\begin{ganttchart}[
+  hgrid,
+  vgrid,
+  bar/.append style={fill=blue!60},
+  group/.append style={fill=gray!40},
+  y unit chart=0.7cm,
+  bar label font=\scriptsize
+]{1}{24}
+  \gantttitle{Project Timeline}{24} \\
 
-\begin{equation}
-    a_n = \int_D f(\mathbf{x}) \phi_n(\mathbf{x})  d \mathbf{x}
-\end{equation}
+    \ganttgroup{Year 1:}{1}{6} \\
+    \ganttbar{Optimization method}{1}{2} \\
+    \ganttbar{VPM eVTOL modeling}{3}{4} \\
+    \ganttbar{Transition optimization}{3}{6} \\
 
-The Koopman operator can be thought of a matrix of these projection values.  If we have the discrete dynamic system $\mathbf{x}_{k+1} = F(\mathbf{x}_k)$, we want to find a matrix $K$ such that 
+  \ganttgroup{Year 2: }{7}{12} \\
+  \ganttbar{Time step reduction method}{7}{8} \\
+  \ganttbar{ODE benchmarking}{9}{11} \\
+  \ganttbar{VPM application}{10}{12} \\
 
-\begin{equation}
-    \phi(\mathbf{x}_{k+1}) = \phi(F(\mathbf{x}_k)) = K \phi(\mathbf{x}_k)
-\end{equation}
+  \ganttgroup{Year 3: }{13}{18} \\
+  \ganttbar{Koopman learning method}{13}{16} \\
+  \ganttbar{Example cases}{15}{17} \\ 
+  \ganttbar{VPM linearization}{16}{20} \\ 
 
-So we need to construct the function $\phi(F(\mathbf{x}_k))$ by an expansion in the basis $\phi(\mathbf{x}_k)$.  The Koopman operator $K$ is therefore a projection of the desired function onto this basis
+  \ganttgroup{Year 4: }{19}{24} \\
+  \ganttbar{Accelerated VPM optimization}{19}{21} \\ 
+  \ganttbar{VPM Koopman control}{22}{24} 
+\end{ganttchart}
 
-\begin{equation}
-    \label{eq:koopman_projection}
-    K_{ij} = \int_D \phi_i(F(\mathbf{x})) \phi_j(\mathbf{x})  d \mathbf{x}
-\end{equation}
+During the first year, this project has focused on applying the VPM to an eVTOL hover to cruise transition optimization.  An optimization methodology has been developed to overcome noisy VPM derivatives and improve convergence.  The VPM was used to model a tilt-rotor aircraft, and this framework was applied to optimize the transition maneuver.  The second year of this project will be devoted to the development of the neural time step reduction method.  This method will then be used to solve example ODEs that traditionally require fine time discretization - these benchmarks will highlight the benefit of the novel technique.  After the methodology is finalized and validated, it will be applied to the VPM, and tuned to achieve the maximum possible speedups.  The third year of the project will be dedicated to the development of an improved Koopman learning method, which will be more general, and require less data for training then current methods.  This method will again be validated against the standard method through a series of simple example cases, and then applied to learn globally linear VPM dynamics.  The fourth and final year of the project will be characterized mainly by application of these techniques to large scale VPM problems, including a VPM-based trajectory optimization, and active feedback control application.
 
-This construction is desireable because it does not rely on data at all, and instead gives an analytic form of the best possible Koopman operator for a given set of bases.  
-
-There are two main challenges of this approach.  The first is that the basis functions $\phi_n$ may not be the ideal basis for expressing the underlying dynamics, which could lead to large errors unless $\phi_n$ is infinite.  
-
-To address this issue, we will define $\phi_n$ as a neural network and train it to learn the best possible basis to work in for the specific problem.  As a measure for how good the basis is, we examine the values of the projection coefficients, which reveal how much of the original function was captured by the projection.  This is mathematically expressed through Parseval's theorem which states that for the expansion of a function $f(x)$ a complete basis,
-
-\begin{equation}
-    ||f||^2 = \overset{\infty}{\underset{n = 0}{\sum}} |a_n|^2
-\end{equation}
-
-If this relation is true, then all of the "energy" of the function $f(x)$ is captured in the coefficients, and the function is exactly reconstructed.  Applied to the Koopman problem, this means we can define a loss function
-
-\begin{equation}
-    L_i = ||\phi_i(F(\mathbf{x}))||^2 - \overset{N}{\underset{j = 0}{\sum}} |K_{ij}|^2
-\end{equation}
-
-Minimizing this error over all the rows of the Koopman operator will yield the best possible basis.
-
-The second big challenge is that the integrand $\phi_j(\mathbf{x}) \phi_i(F(\mathbf{x}))$ from \ref{eq:koopman_projection} is potentially a very nonlinear and complex function that cannot be integrated analytically.  We can integrate numerically over the domain, but if the $\mathbf{x}$ is high dimensional, this quickly becomes extremely expensive.
-
-We address this issue by recognizing that any complex function $f(x)$ can be described by a computational graph which consists of the composition of many simple operations $f(x) = f_n \circ \cdots \circ f_3 \circ f_2 \circ f_1 \circ x$.  
-
-Finding the projections for just $f_1$ is potentially easier if $f_1$ is a simple operation
-
-\begin{equation}
-    \phi(f_1(x)) = K_1 \phi(x)
-\end{equation}
-
-Then, if we find the projections for $f_2$, 
-
-\begin{equation}
-    \phi(f_2(x)) = K_2 \phi(x)
-\end{equation}
-
-we can construct the projections for $f_2 \circ f_1$ because we have
-
-\begin{equation}
-    \phi(f_2(f_1(x))) = K_2 \phi(f_1(x)) = K_2 K_1 \phi(x)\\ 
-\end{equation}
-
-We can therefore construct the full Koopman operator of $f$ by
-
-\begin{equation}
-    \phi(f(x)) = K_n \cdots K_2 K_1 \phi(x) = K \phi(x)\\ 
-\end{equation}
-
-This approach has the potential to be arbitrarily general because we relied on projection of our function onto a custom basis instead of training data.  However, it is currently only in the very early stages of development and remains untested.  It is also possibly susceptible to very large errors because each projection is an approximation, and the error accumulated over a large computational graph can be very significant unless it is trained sufficiently to minimize that error. For this reason, we will pursue both the projection approach and the method of characteristics approach to achieve the best outcome.
-
+The successful completion of this project will not only depend on adherence to the project timeline, but it will also require access to high-performance computational resources.  We will take advantage of the FLOW Lab workstation for preliminary testing, and utilize BYU's supercomputing facilities in order to efficiently perform optimization, and training of our deep learning models. 
 
 \section{Anticipated Contributions}
 
