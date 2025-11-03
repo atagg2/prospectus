@@ -21,12 +21,12 @@ u_hist .*= u_scaling
 t = range(0.0, 7.5, length(x_hist[1,:,end]))
 
 # create subplots
-pv = PL.plot(t, x_hist[1,:,end], xlabel = "Time (s)", ylabel = "Velocity (m/s)", label = false)
-pth = PL.plot(t, x_hist[6,:,end]*180/pi, xlabel = "Time (s)", ylabel = "Pitch (deg)", label = false)
-po = PL.plot(t[1:end-1], u_hist[1,:,end]*60/2/pi, xlabel = "Time (s)", ylabel = "Rotor RPM", label = "Front", ylims = [-10, 5000], legend = :topleft)
+pv = PL.plot(t, x_hist[1,:,end], xlabel = "Time (s)", ylabel = "Velocity (m/s)", label = false, guidefont=11, tickfont=11)
+pth = PL.plot(t, x_hist[6,:,end]*180/pi, xlabel = "Time (s)", ylabel = "Pitch (deg)", label = false, guidefont=11, tickfont=11)
+po = PL.plot(t[1:end-1], u_hist[1,:,end]*60/2/pi, xlabel = "Time (s)", ylabel = "Rotor RPM", label = "Front", legend = :topleft, guidefont=11, tickfont=11, legendfont=10, ylims=  [-10,6200], legend_background_color=:transparent)
 PL.plot!(po, t[1:end-1], u_hist[2,:,end]*60/2/pi, label = "Middle")
 PL.plot!(po, t[1:end-1], u_hist[3,:,end]*60/2/pi, label = "Back")
-pt = PL.plot(t[1:end-1], u_hist[4,:,end]*180/pi, xlabel = "Time (s)", ylabel = "Rotor Tilt (deg)", label = "Front")
+pt = PL.plot(t[1:end-1], u_hist[4,:,end]*180/pi, xlabel = "Time (s)", ylabel = "Rotor Tilt (deg)", label = "Front", legend=false, guidefont=11, tickfont=11, legendfont=11)
 PL.plot!(pt, t[1:end-1], u_hist[5,:,end]*180/pi, label = "Middle")
 PL.plot!(pt, t[1:end-1], u_hist[6,:,end]*180/pi, label = "Back")
 
@@ -67,7 +67,8 @@ p_lift_wing = PL.plot(ts, vlm_lift_wing,
            xlabel = "Time (s)",
            ylabel = "Vertical Force (N)",
            label = "VLM",
-           legend = :topleft)
+           legend = :topleft,
+           legend_background_color=:transparent)
 PL.plot!(p_lift_wing, t_vpm, vpm_lift_wing,
            label = "VPM")
 
@@ -75,12 +76,12 @@ p_drag_wing = PL.plot(ts, vlm_drag_wing,
            xlabel = "Time (s)",
            ylabel = "Horizontal Force (N)",
            label = "VLM",
-           legend = :topleft)
+           legend = false)
 PL.plot!(p_drag_wing, t_vpm, vpm_drag_wing,
          label = "VPM")
 
 # create full plot
-p_forces = PL.plot(p_lift_wing, p_drag_wing, layout = (1,2), size = (1400, 500), guidefont=20, tickfont=20, legendfont=20) 
+p_forces = PL.plot(p_lift_wing, p_drag_wing, layout = (1,2), size = (1400, 500), guidefont=22, tickfont=22, legendfont=20) 
 
 # save figure
 PL.savefig(p_forces, "/Users/atagg/Documents/research/prospectus/figures/comparison.png")
@@ -94,7 +95,7 @@ t = range(0.0, 1.0, length(ode_data[1,:]))
 t_sol = range(0.0, 1.0, length(ode_solution))
 
 # generate plot
-pode = PL.plot(t, ode_data[1,:], xlabel = "Time", ylabel = "State", markershape = :circle, label = "Naive Integration")
+pode = PL.plot(t, ode_data[1,:], xlabel = "Time", ylabel = "State", markershape = :circle, label = "Naive Integration", guidefont=15, tickfont=15, legendfont=13, legend_background_color=:transparent)
 PL.plot!(pode, t, ode_data[2,:], markershape = :circle, label = "Neural time step reduction")
 PL.plot!(pode, t_sol, ode_solution, label = "True solution")
 
@@ -112,7 +113,7 @@ t = range(0.0, 1.0, length(z[1,:]))
 
 # create standard method plot
 palette = PL.palette(:auto)
-ps = PL.plot(t, y[1,:], xlabel = "Time", ylabel = "Latent State", label="Actual", color=palette[1], legend = :bottomleft, title = "Standard Neural Network")
+ps = PL.plot(t, y[1,:], xlabel = "Time", ylabel = "Latent State", label="Actual", color=palette[1], legend = :bottomleft, title = "Standard Neural Network", legend_background_color=:transparent, titlefont=20)
 PL.plot!(t, yp[1,:], ls=:dash, color=palette[1], label = "Predicted")
 PL.plot!(t, y[2,:], color=palette[2], label = false)
 PL.plot!(t, yp[2,:], ls=:dash, color=palette[2], label = false)
@@ -126,7 +127,7 @@ PL.plot!(t, y[6,:], color=palette[6], label = false)
 PL.plot!(t, yp[6,:], ls=:dash, color=palette[6], label = false)
 
 # create method of characteristics plot
-pm = PL.plot(t, z[1,:], xlabel = "Time", zlabel = "Latent State", label=false, color=palette[1], legend = :bottomright, title = "Method of Characteristics Network")
+pm = PL.plot(t, z[1,:], xlabel = "Time", zlabel = "Latent State", label=false, color=palette[1], legend = :bottomright, title = "Method of Characteristics Network", titlefont=20)
 PL.plot!(t, zp[1,:], ls=:dash, color=palette[1], label = false)
 PL.plot!(t, z[2,:], color=palette[2], label = false)
 PL.plot!(t, zp[2,:], ls=:dash, color=palette[2], label = false)

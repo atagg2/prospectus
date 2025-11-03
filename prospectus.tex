@@ -145,15 +145,17 @@ The large foundation of work in trajectory optimization and control during compl
 
 However, the main limitation of the current base of research is that nearly all of these studies rely heavily on overly simplified aerodynamic models, which either assume steady state flow, or other idealizations that are not accurate during an unsteady maneuver.  This is a real problem.  There is strong evidence to suggest that model fidelity has a severe effect on the outcome of trajectory optimization \cite{anderson2021acomparison}.  Some studies have directly compared steady state models with unsteady models during an eVTOL transition and found significant discrepancy \cite{tagg2024trajectory}.  Others have quantified the effect of unsteady aerodynamics during rotational motion, and found that it greatly impacts the dynamic stability of the aircraft \cite{wang2012unsteady}.  Clearly, unsteady aerodynamics play an important role during the transition of these aircraft, and cannot be justifiably ignored during analysis and optimization. 
 
-Some effort has been made toward improving model fidelity in optimization and control applications.  One common approach is to generate high fidelity CFD data, and then tune the parameters of the low fidelity model \cite{dean2008aircraft, tian2020cfd, gortz2007towards}.  This approach is a clear improvement, but unless the parameters are updated constantly, it is still subject to the limitations of a steady state model.  Other studies have focused on applying fast unsteady aerodynamic models like the harmonic balance method \cite{thomas2004modeling} and Theodorsen's theory \cite{bhoir2004output}.  While useful, these methods apply only to very simple oscillatory motions and cannot represent a more complex maneuver.  
+Some effort has been made toward improving model fidelity in optimization and control applications.  One common approach is to generate high fidelity data from computational fluid dynamics (CFD) simulations, and then tune the parameters of the low fidelity model \cite{dean2008aircraft, tian2020cfd, gortz2007towards}.  This approach is a clear improvement, but unless the parameters are updated constantly, it is still subject to the limitations of a steady state model.  Other studies have focused on applying fast unsteady aerodynamic models like the harmonic balance method \cite{thomas2004modeling} and Theodorsen's theory \cite{bhoir2004output}.  While useful, these methods apply only to very simple oscillatory motions and cannot represent a more complex maneuver.  
 
-The best effort so far to fully incorperate high fidelity simulations into optimization and control loops has come from a pair of studies that employed a light weight two-dimensional vortex particle method to trajectory optimization \cite{perrotta2023planningcontroldynamicmorphingwing} and then real time control \cite{gupta2025realtimeplanningcontrolvortex} for fixed wing perching maneuvers.  Even though these VPM models were limited to two dimensions, and under 100 particles, the studies showed improved performance and more accurate precision landings when the unsteady model was used.  This is direct evidence that employing high fidelity models in control loops can lead to better results, but the scope of these improvements is still very much limited by computational cost as demonstrated by the need for such a light weight version of the VPM.   
+The vortex particle method (VPM) offers a compelling middle ground between traditional CFD and lower-order aerodynamic models. Unlike grid-based solvers, VPM is meshless, alleviating issues related to mesh generation, deformation, and dissipation. Instead, the VPM represents vorticity as a collection of Lagrangian particles, enabling efficient simulation of vortex shedding, wake roll-up, and other inherently unsteady flow phenomena. Prior work has demonstrated that VPM can deliver orders-of-magnitude computational speed-ups compared to traditional CFD solvers while retaining high-fidelity unsteady flow physics \cite{alvarez2022reformulated}. Furthermore, our research group has developed a reformulated VPM that exhibits substantially improved numerical stability relative to conventional implementations \cite{alvarez2024stable}. Because of its remarkable computational efficiency, the VPM is well-suited for analyzing unsteady aerodynamics during complex maneuvers involving multiple rotor–surface interactions. However, computation is still a major bottleneck, and large-scale application in trajectory optimization and control remains limited. 
+ 
+The best effort so far to fully incorperate VPM into optimization and control loops has come from a pair of studies that employed a light weight two-dimensional vortex particle method to trajectory optimization \cite{perrotta2023planningcontroldynamicmorphingwing} and then real time control \cite{gupta2025realtimeplanningcontrolvortex} for fixed wing perching maneuvers.  Even though these VPM models were limited to two dimensions, and under 100 particles, the studies showed improved performance and more accurate precision landings when the unsteady model was used.  This is direct evidence that employing high fidelity models in control loops can lead to better results, but the scope of these improvements is still very much limited by computational cost as demonstrated by the need for such a light weight version of the VPM.   
 
-One promising alternative is the use of deep learning to capture unsteady fluid dynamics.  There have been many studies which apply vanilla neural networks \cite{collotta2014arealtime, sabater2021fast}, convolutional neural networks \cite{abucide2021adata, hwang2025aerodynamic}, and physics informed neural networks \cite{raissi2019physics, lin2025aphysics} to learn fluids flows or aerodynamic coefficients.  Other papers have attempted to learn high resolution flow fields from low resolution solutions \cite{sharma2025accelerating, gao2021super}, or focus on learning the underly dynamics of the system using neural ODEs \cite{jarry2025neuralodeapproachaircraft, ma2024development}.  These approaches offer a compelling solution to the problem of high fidelity optimization and control because they allow for rapid evaluation of the deep surrogate network at significantly reduced cost.  Despite the significant advancements in deep learning, existing data-driven approaches often struggle to generalize completely unless exhaustive training data are provided, which is extremely difficult in the high dimensional and computationally expensive world of CFD. 
+One promising alternative is the use of deep learning to capture unsteady fluid dynamics.  There have been many studies which apply vanilla neural networks \cite{collotta2014arealtime, sabater2021fast}, convolutional neural networks \cite{abucide2021adata, hwang2025aerodynamic}, and physics informed neural networks \cite{raissi2019physics, lin2025aphysics} to learn fluid flows or aerodynamic coefficients.  Other papers have attempted to learn high resolution flow fields from low resolution solutions \cite{sharma2025accelerating, gao2021super}, or focus on learning the underly dynamics of the system using neural ODEs \cite{jarry2025neuralodeapproachaircraft, ma2024development}.  These approaches offer a compelling solution to the problem of high fidelity optimization and control because they allow for rapid evaluation of the deep surrogate network at significantly reduced cost.  Despite the significant advancements in deep learning, existing data-driven approaches often struggle to generalize completely unless exhaustive training data are provided, which is extremely difficult in the high dimensional and computationally expensive world of CFD. 
 
 Deep learning offers the potential for rapid evaluation and can capture unsteady aerodynamic effects, but traditional data-driven approaches often fail to generalize without prohibitively large datasets. Low-fidelity models are computationally efficient and generalize well, yet they neglect critical unsteady phenomena. High-fidelity simulations, on the other hand, are accurate and broadly applicable but are too computationally expensive for practical use in iterative optimization and real-time control. What is needed is a methodology that combines speed, accuracy, and generality, enabling unsteady aerodynamics to directly inform design and control decisions.
 
-The proposed work addresses this challenge through a novel integration of high-fidelity simulation and deep learning. Rather than using data to fully replace the vortex particle method (VPM), we focus on accelerating the simulation of known VPM dynamics by reducing the number of required time steps. This approach will make VPM-based trajectory optimization significantly more feasible by reducing a primary bottleneck in VPM simulation. Building on this foundation, we will develop a method for learning Koopman linear representations of VPM dynamics without relying on an exhaustive training data set. This will improve the generalizability of Koopman learning, and enable Koopman linearization of high-dimensional, and computationally expensive models.  The resulting framework will enable real-time control informed by high-fidelity aerodynamics, bridging the gap between computationally expensive simulations and practical control applictions.
+The proposed work addresses this challenge through a novel integration of high-fidelity simulation and deep learning. Rather than using data to fully replace the VPM, we focus on accelerating the simulation of known VPM dynamics by reducing the number of required time steps. This approach will make VPM-based trajectory optimization significantly more feasible by reducing a primary bottleneck in VPM simulation. Building on this foundation, we will develop a method for learning Koopman linear representations of VPM dynamics without relying on an exhaustive training data set. This will improve the generalizability of Koopman learning, and enable Koopman linearization of high-dimensional, and computationally expensive models.  The resulting framework will enable real-time control informed by high-fidelity aerodynamics, bridging the gap between computationally expensive simulations and practical control applictions.
 
 
 % introduce some cases where unsteady aero is imortant
@@ -308,7 +310,7 @@ The central goal of this work is to facilitate the incorporation of high-fidelit
     This objective will seek to uncover linear representations of VPM dynamics, enabling real time control synthesis informed by the VPM.  We will apply a combination of physics informed deep learning, and PDE solution methods to demonstrate improved generality over state of the art approaches.  
 
     \item \textbf{Apply these new techniques to the eVTOL transition maneuver problem.}
-    This objective will be an application of the novel techniques developed and will serve to demonstrate their effectiveness in the context of an eVTOL transition maneuver.  We will conduct trajectory optimization using the accelerated VPM simulations, and control synthesis using the learned Koopman operator.
+    This objective will be an application of the novel techniques developed and will serve to demonstrate their effectiveness in the context of an eVTOL transition maneuver.  We will conduct trajectory optimization using the accelerated VPM simulations, and control synthesis using the learned Koopman operator.  Though this application study we will show reduced computational cost, and improved aircraft performance when compared to existing methods.
 \end{enumerate}
 
 Together, these objectives establish a cohesive research plan which will unite high-fidelity aerodynamic modeling with optimization and control.  By first demonstrating the practical feasibility and importance of unsteady aerodynamics in trajectory optimization, and then systematically addressing computational challenges that limit it's broader use, this research will lay the ground work for rapid optimization and real-time control using models that are based on sound physical foundations. 
@@ -329,7 +331,7 @@ Together, these objectives establish a cohesive research plan which will unite h
 
 
 % Summarize the high level approach
-As outlined in the previous section, the proposed work will have four main thrusts.  First, the VPM will be applied to an eVTOL transition optimization problem to demonstrate feasibility of the optimization approach and highlight the need for high fidelity modeling in this case.  Next, the method of applying deep learning to accelerate VPM simulation through time step reduction will be developed and tested.  After successful VPM accelerations are achieved, the focus of the project will turn toward Koopman learning for VPM dynamics.  Finally, these innovations will be utilized to optimize trjectories and perform active feedback control for the eVTOL transition maneuver to demonstrate improved performance and reduced computational cost.  
+As outlined above, the proposed work consists of four primary thrusts. First, we will apply the VPM to an eVTOL transition trajectory optimization problem to establish feasibility and demonstrate the need for high-fidelity aerodynamic modeling. Second, we will develop and validate a deep learning approach to accelerate VPM simulations via neural time-step reduction. Third, we will extend this framework to learn Koopman models of VPM dynamics, enabling efficient linear prediction of complex flow behavior. Finally, these tools will be integrated to perform trajectory optimization and closed-loop control for the eVTOL transition. The following sections describe the technical approach and methodologies developed to accomplish these objectives.
 
 % Method subsections
 \subsection{Trajectory Optimization}
@@ -438,7 +440,7 @@ To address this, we apply an exponential moving average of the matrices to smoot
 
 where $\bar{A}_k$ is the tracked average of the derivatives across iterations, $A_k$ is the newly computed derivative, and $\alpha$ is a tuning parameter which regulates the level of filtering.
 
-These techniques have been successfully applied to the trajectory optimization of a tilt-rotor eVTOL inspired by the Joby S4 aircraft.  The results of the trajectory optimization are presented in Fig. ~\ref{fig:trajectory} which shows that the aircraft was able to reach a target velocity of $55$ meters per second by gradually tilting its rotors forward while maintaining constant altitude by pitching the aircraft up to increase lift.
+Using this filtering technique, as well as the derivative curve fit and iterative linearizataion, we were able to apply the VPM to trajectory optimization of a tilt-rotor eVTOL inspired by the Joby S4 aircraft.  The aircraft trajectory and control inputs were optimized to perform a hover to cruise transition maneuver in the presence of fully unsteady aerodynamic interactions as calculated by the VPM.  The results of the trajectory optimization are presented in Fig. ~\ref{fig:trajectory} which shows that the aircraft was able to reach a target velocity of $55$ meters per second by gradually tilting its rotors forward while maintaining constant altitude by pitching the aircraft up to increase lift.
 
 \begin{figure}[hbt!]
 \centering
@@ -447,7 +449,7 @@ These techniques have been successfully applied to the trajectory optimization o
 \label{fig:trajectory}
 \end{figure}
 
-As part of this study, we compare the force predictions from the VPM with those of a lower fidelity vortex lattice method (VLM) and show that the VLM does predict the correct trends, but does not capture the influence of a morphing wake during transition.  This discrepancy is shown in Fig. ~\ref{fig:comparison} where the two methods disagree by over 1000 N during early transition.
+As part of this study, we compare the force predictions from the VPM with those of a lower fidelity vortex lattice method (VLM) which analyzes the forces on a wing assuming steady state flow. We show that the VLM does predict the correct trends, but does not capture the influence of a morphing wake during transition.  This discrepancy is shown in Fig. ~\ref{fig:comparison} where the two methods disagree by over 1000 N during early transition.
 
 \begin{figure}[hbt!]
 \centering
@@ -459,7 +461,7 @@ As part of this study, we compare the force predictions from the VPM with those 
 
 \subsection{Neural Time Step Reduction}
 
-The techniques outlined above present a feasible approach to trajectory optimization in the VPM by overcoming key challenges such as noise and the high cost of derivatives.  However, the optimization took roughly 428 hours to complete, which is a major limitation on the practicality of this approach. A large part of this cost is due to the extremely small time steps necessary to resolve particle dynamics.  This means that simulations often have on the order of $10000$ time steps.  To address this issue, we will present a novel methodology that aims to accelerate the VPM by reducing the time steps necessary to solve the governing differential equations.  While a major motivation of this method is directed toward accelerating the VPM, it is completely general and can be applied to any explicit ordinary differential equation (ODE).  
+The techniques outlined above present a feasible approach to trajectory optimization in the VPM by overcoming key challenges such as noise and the high cost of derivatives.  However, the optimization took roughly 428 hours to complete, which is a major limitation on the practicality of this approach. A large part of this cost is due to the extremely small time steps necessary to resolve particle dynamics.  This means that simulations often need $5000$ - $10000$ time steps just to simulate $10$ seconds of real-time flight.  To address this issue, we will present a novel methodology that aims to accelerate the VPM by reducing the time steps necessary to solve the governing differential equations.  While a major motivation of this method is directed toward accelerating the VPM, it is completely general and can be applied to any explicit ordinary differential equation (ODE).  
 
 Consider a general system of ODEs
 
@@ -477,7 +479,7 @@ The best metric for determining whether the dynamics are fast or slow is the spe
 
 where $||\boldsymbol{\lambda}||_{\infty}$ is the magnitude of the largest eigenvalue of $\frac{df}{d\mathbf{x}}$
 
-We desire a dynamic system which has a small spectral radius, and therefore slow dynamics, so that we can simulate the system accurately with only a small number of time steps.  To achieve this, we will leverage two neural networks $\phi$, and $\psi$ that together form an autoencoder pair.
+We desire a dynamic system which has a small spectral radius, and therefore slow dynamics, so that we can simulate the system accurately with larger time steps.  To achieve this, we will leverage two neural networks $\phi$, and $\psi$ that together form an autoencoder pair.
 
 \begin{equation}
     \mathbf{z} = \phi(\mathbf{x}) \quad \mathbf{x} = \psi(\mathbf{z})
@@ -518,10 +520,10 @@ The other loss function that we need to define is the standard autoencoder recon
     L_r = \frac{1}{N} \overset{N}{\underset{k=0}{\sum}} ||\mathbf{x}_k - \psi(\phi(\mathbf{x}_k))||_2^2
 \end{equation}
 
-The autoencoder pair is then trained to minimize the combined loss function
+The autoencoder pair is then trained to minimize the weighted combination of the two loss functions
 
 \begin{equation}
-        \underset{\phi, \psi}{\text{minimize}} \; \; \; \; \frac{1}{N} \overset{N}{\underset{k=0}{\sum}}\rho\left( \frac{d \dot{\mathbf{z}}}{d \mathbf{z}} \Big|_{\mathbf{z}_k} \right) + ||\mathbf{x}_k - \psi(\phi(\mathbf{x}_k))||_2^2 
+        \underset{\phi, \psi}{\text{minimize}} \; \; \; \; \frac{1}{N} \overset{N}{\underset{k=0}{\sum}}w_1\rho\left( \frac{d \dot{\mathbf{z}}}{d \mathbf{z}} \Big|_{\mathbf{z}_k} \right) + w_2||\mathbf{x}_k - \psi(\phi(\mathbf{x}_k))||_2^2 
 \end{equation}
 
 This method has been shown to be successful in reducing the number of time steps necessary to simulate the following ODE
@@ -534,8 +536,8 @@ which has eigenvalue $\lambda = -15$.  Because the dynamics are relatively fast,
 
 \begin{figure}[hbt!]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/neural_time_step.png}
-    \caption{Simulation of the dynamic system $\frac{dx}{dt} = -15x$} using a small number of large time steps.  The original system (blue) is compared to the learned system (orange) and the analytic solution (green).  Using neural time step reduction drastically increases the accuracy of the simulations when using a large time step of 0.1.
+\includegraphics[width=0.6\textwidth]{figures/neural_time_step.png}
+    \caption{Simulation of the dynamic system $\frac{dx}{dt} = -15x$ using large time steps.  The original system (blue) is compared to the learned system (orange) and the analytic solution (green).  Using neural time step reduction drastically increases the accuracy of the simulation when using a large time step of 0.1.}
 \label{fig:neural_time_step}
 \end{figure}
 
@@ -626,8 +628,9 @@ In other words, $t$ increases unitarily along the trajectories, and $l$ is const
 %
 %where $\omega(\mathbf{x}_0)$ is a known function defining the trajectory labels.  For example, if $\mathbf{x} = (x, y)^T$ and we define initial conditions along the line $x = 0$, then the boundary conditions are $t(0,y) = 0$ and $l(0,y) = y$.  This means that trajectories start on the $y$-axis, and are labeled by their $y$ value.
 
-This method was used to learn a solution to the Koopman problem for a simulated glider undergoing a transient maneuver before stabilizing.  The results where compared to the standard method of simply defining a vanilla neural network for $\mathbf{z}(\mathbf{x})$.  In both methods, the latent states were simulated from initial conditions using the learned Koopman operator $K$, and compared to their "true" values which where encoded directly from the original trajectory.  As shown in Fig. ~\ref{fig:method_of_characteristics}, the method of characteristics approach is much more accurate then the standard method for the same number of collocation points.  
+This method was used to learn a solution to the Koopman problem for a simulated glider undergoing a transient maneuver before stabilizing.  The results were compared to the standard method of simply defining a vanilla neural network for $\mathbf{z}(\mathbf{x})$.  In both methods, the latent states were simulated from initial conditions using the learned Koopman operator $K$, and compared to their "true" values which where encoded directly from the original trajectory. 
 
+The results of this comparison are shown in Fig. \ref{fig:method_of_characteristics}. Note that the figure shows the learned latent space dynamics for each network - because the networks learn very different latent representations, they produce very different graphs.  The difference between the two methods is seen in how accurately the Koopman operator $K$ can predict those latent dynamics, which is represented by the dashed lines in each graph.  The method of characteristics approach is much more accurate then the standard method for the same number of data points. 
 \begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/method_of_characteristics.png}
@@ -716,39 +719,53 @@ This method was used to learn a solution to the Koopman problem for a simulated 
 
 \subsection{Project Outline}
 
-In order to successfully accomplish all of the specified research objectives, we will adhere to the following project timeline:
+In order to successfully accomplish all of the specified research objectives, we will adhere to the project timeline shown in Fig. \ref{fig:timeline}
 
-\begin{ganttchart}[
-  hgrid,
-  vgrid,
-  bar/.append style={fill=blue!60},
-  group/.append style={fill=gray!40},
-  y unit chart=0.7cm,
-  bar label font=\scriptsize
-]{1}{24}
-  \gantttitle{Project Timeline}{24} \\
 
-    \ganttgroup{Year 1:}{1}{6} \\
-    \ganttbar{Optimization method}{1}{2} \\
-    \ganttbar{VPM eVTOL modeling}{3}{4} \\
-    \ganttbar{Transition optimization}{3}{6} \\
+\begin{figure}[hbt!]
+\centering
+    \begin{ganttchart}[
+      hgrid,
+      vgrid,
+      bar/.append style={fill=blue!60},
+      group/.append style={fill=gray!40},
+      y unit chart=0.7cm,
+      bar label font=\scriptsize
+    ]{1}{24}
+      \gantttitle{Project Timeline}{24} \\
 
-  \ganttgroup{Year 2: }{7}{12} \\
-  \ganttbar{Time step reduction method}{7}{8} \\
-  \ganttbar{ODE benchmarking}{9}{11} \\
-  \ganttbar{VPM application}{10}{12} \\
+        \ganttgroup{Year 1:}{1}{6} \\
+        \ganttbar{Optimization method}{1}{2} \\
+        \ganttbar{VPM eVTOL modeling}{3}{4} \\
+        \ganttbar{Transition optimization}{3}{6} \\
 
-  \ganttgroup{Year 3: }{13}{18} \\
-  \ganttbar{Koopman learning method}{13}{16} \\
-  \ganttbar{Example cases}{15}{17} \\ 
-  \ganttbar{VPM linearization}{16}{20} \\ 
+      \ganttgroup{Year 2: }{7}{12} \\
+      \ganttbar{Time step reduction method}{7}{8} \\
+      \ganttbar{ODE benchmarking}{9}{11} \\
+      \ganttbar{VPM acceleration}{10}{12} \\
 
-  \ganttgroup{Year 4: }{19}{24} \\
-  \ganttbar{Accelerated VPM optimization}{19}{21} \\ 
-  \ganttbar{VPM Koopman control}{22}{24} 
-\end{ganttchart}
+      \ganttgroup{Year 3: }{13}{18} \\
+      \ganttbar{Koopman learning method}{13}{16} \\
+      \ganttbar{Example cases}{15}{17} \\ 
+      \ganttbar{VPM linearization}{16}{20} \\ 
 
-During the first year, this project has focused on applying the VPM to an eVTOL hover to cruise transition optimization.  An optimization methodology has been developed to overcome noisy VPM derivatives and improve convergence.  The VPM was used to model a tilt-rotor aircraft, and this framework was applied to optimize the transition maneuver.  The second year of this project will be devoted to the development of the neural time step reduction method.  This method will then be used to solve example ODEs that traditionally require fine time discretization - these benchmarks will highlight the benefit of the novel technique.  After the methodology is finalized and validated, it will be applied to the VPM, and tuned to achieve the maximum possible speedups.  The third year of the project will be dedicated to the development of an improved Koopman learning method, which will be more general, and require less data for training then current methods.  This method will again be validated against the standard method through a series of simple example cases, and then applied to learn globally linear VPM dynamics.  The fourth and final year of the project will be characterized mainly by application of these techniques to large scale VPM problems, including a VPM-based trajectory optimization, and active feedback control application.
+      \ganttgroup{Year 4: }{19}{24} \\
+      \ganttbar{Accelerated VPM optimization}{19}{21} \\ 
+      \ganttbar{VPM Koopman control}{22}{24} 
+    \end{ganttchart}
+
+    \caption{Visualization of the project timeline outlining each year's subtasks and anticipated durations.}
+\label{fig:timeline}
+\end{figure}
+
+
+During the first year, this project has focused on applying the VPM to an eVTOL hover to cruise transition optimization.  An optimization methodology has been developed to overcome noisy VPM derivatives and improve convergence.  The VPM was used to model a tilt-rotor aircraft, and this framework was applied to optimize the transition maneuver.  
+
+The second year of this project will be devoted to the development of the neural time step reduction method.  This method will then be used to solve example ODEs that traditionally require fine time discretization - these benchmarks will highlight the benefit of the novel technique.  After the methodology is finalized and validated, it will be applied to the VPM, and tuned to achieve the maximum possible speedups.  
+
+The third year of the project will be dedicated to the development of an improved Koopman learning method, which will be more general, and require less data for training then current methods.  This method will again be validated against the standard method through a series of simple example cases, and then applied to learn globally linear VPM dynamics.  
+
+The fourth and final year of the project will be characterized mainly by application of these techniques to large scale VPM problems, including a VPM-based trajectory optimization, and active feedback control application.
 
 The successful completion of this project will not only depend on adherence to the project timeline, but it will also require access to high-performance computational resources.  We will take advantage of the FLOW Lab workstation for preliminary testing, and utilize BYU's supercomputing facilities in order to efficiently perform optimization, and training of our deep learning models. 
 
@@ -763,7 +780,7 @@ The proposed work, as outlined in the previous section, aims to bridge the gap b
 \item An enhancement of the generalizability of the Koopman learning process, enabling more robust linearization of nonlinear dynamics and supporting real-time control of complex, high-fidelity systems.
 \end{enumerate}
 
-Together, these efforts will create a cohesive framework that unites high-fidelity aerodynamic modeling, machine learning, and control theory. By overcoming the computational and modeling barriers that have traditionally separated simulation from real-time decision making, this research will make it possible for optimization and control algorithms to directly leverage unsteady aerodynamic effects. In doing so, it lays the foundation for a new generation of aircraft design and control strategies—ones that are not only faster and more efficient, but also fundamentally more adaptive and aware of the physics that govern their motion.
+Together, these efforts will create a cohesive framework that unites high-fidelity aerodynamic modeling, machine learning, and control theory. By overcoming the computational and modeling barriers that have traditionally separated simulation from real-time decision making, this research will make it possible for optimization and control algorithms to directly leverage unsteady aerodynamic effects. In doing so, it lays the foundation for a new generation of aircraft design and control strategies—ones that are not only faster and more efficient, but also fundamentally more adaptive and aware of the physics that govern aircraft motion.
 
 
 
